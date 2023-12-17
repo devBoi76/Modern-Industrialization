@@ -60,29 +60,63 @@ public class PipeItem extends Item {
         // TODO: Check BlockItem code and implement all checks.
         // TODO: Check advancement criteria.
 
+        Level world = context.getLevel();
+
+        switch (tryPlacePipe(context)) {
+            case PLACED_NEW -> {
+                Player player = context.getPlayer();
+
+                // remove one from stack
+                ItemStack placementStack = context.getItemInHand();
+                if (player != null && !player.getAbilities().instabuild) {
+                    placementStack.shrink(1);
+                }
+
+
+                return InteractionResult.sidedSuccess(world.isClientSide);
+            }
+            case MADE_CONNECTION -> {
+                return InteractionResult.sidedSuccess(world.isClientSide);
+            }
+            case DID_NOTHING -> {
+                return InteractionResult.FAIL;
+            }
+        }
+
+        return super.useOn(context);
+    }
+
+
+    public enum PipePlacementResult {
+        PLACED_NEW,
+        MADE_CONNECTION,
+        DID_NOTHING
+    }
+
+    public PipePlacementResult tryPlacePipe(UseOnContext context) {
         BlockPos placingPos = tryPlace(context);
+
+        Level world = context.getLevel();
+
         if (placingPos != null) {
-            Level world = context.getLevel();
+
             Player player = context.getPlayer();
 
             // update adjacent pipes
             world.blockUpdated(placingPos, Blocks.AIR);
-            // remove one from stack
-            ItemStack placementStack = context.getItemInHand();
-            if (player != null && !player.getAbilities().instabuild) {
-                placementStack.shrink(1);
-            }
+
             // play placing sound
             BlockState newState = world.getBlockState(placingPos);
             SoundType group = newState.getSoundType();
             world.playSound(player, placingPos, group.getPlaceSound(), SoundSource.BLOCKS, (group.getVolume() + 1.0F) / 2.0F,
                     group.getPitch() * 0.8F);
 
-            return InteractionResult.sidedSuccess(world.isClientSide);
+            // pipe should be consumed
+            return PipePlacementResult.PLACED_NEW;
+
         } else {
             // if we couldn't place a pipe, we try to add a connection instead
             placingPos = context.getClickedPos().relative(context.getClickedFace());
-            Level world = context.getLevel();
             BlockEntity entity = world.getBlockEntity(placingPos);
             if (entity instanceof PipeBlockEntity pipeEntity) {
                 if (pipeEntity.connections.containsKey(type)) {
@@ -91,16 +125,20 @@ public class PipeItem extends Item {
                     }
                     // update adjacent pipes
                     world.blockUpdated(placingPos, Blocks.AIR);
+
                     // play placing sound
                     BlockState newState = world.getBlockState(placingPos);
                     SoundType group = newState.getSoundType();
                     world.playSound(context.getPlayer(), placingPos, group.getPlaceSound(), SoundSource.BLOCKS, (group.getVolume() + 1.0F) / 2.0F,
                             group.getPitch() * 0.8F);
-                    return InteractionResult.sidedSuccess(world.isClientSide);
+
+                    return PipePlacementResult.MADE_CONNECTION;
                 }
             }
+
         }
-        return super.useOn(context);
+
+        return PipePlacementResult.DID_NOTHING;
     }
 
     // Try placing the pipe and registering the new pipe to the entity, returns null
