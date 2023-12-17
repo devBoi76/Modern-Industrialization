@@ -33,6 +33,7 @@ import aztech.modern_industrialization.items.armor.JetpackItem;
 import aztech.modern_industrialization.items.armor.QuantumArmorItem;
 import aztech.modern_industrialization.items.armor.RubberArmorMaterial;
 import aztech.modern_industrialization.items.diesel_tools.DieselToolItem;
+import aztech.modern_industrialization.items.tools.PipeToolboxItem;
 import aztech.modern_industrialization.items.tools.QuantumSword;
 import aztech.modern_industrialization.nuclear.INeutronBehaviour;
 import aztech.modern_industrialization.nuclear.NuclearComponentItem;
@@ -144,9 +145,11 @@ public final class MIItem {
     public static final ItemDefinition<SteamDrillItem> STEAM_MINING_DRILL = itemHandheld("Steam Mining Drill", "steam_mining_drill",SteamDrillItem::new);
 
     public static final ItemDefinition<DieselToolItem> DIESEL_MINING_DRILL = itemHandheld("Diesel Mining Drill", "diesel_mining_drill", s -> new DieselToolItem(s, 7))
-            .withItemRegistrationEvent((item) -> FluidStorage.ITEM.registerForItems((stack, ctx) -> new FluidFuelItemHelper.ItemStorage(DieselToolItem.CAPACITY, ctx), item));
+            .withItemRegistrationEvent((item) -> FluidStorage.ITEM.registerForItems((stack, ctx) -> new FluidFuelItemHelper.ItemStorage(DieselToolItem.CAPACITY, FluidFuelItemHelper.ItemStorage.FluidCategory.DIESEL_FUEL, ctx), item));
     public static final ItemDefinition<DieselToolItem> DIESEL_CHAINSAW = itemHandheld("Diesel Chainsaw", "diesel_chainsaw", p -> new DieselToolItem(p, 12))
-            .withItemRegistrationEvent((item) -> FluidStorage.ITEM.registerForItems((stack, ctx) -> new FluidFuelItemHelper.ItemStorage(DieselToolItem.CAPACITY, ctx), item));
+            .withItemRegistrationEvent((item) -> FluidStorage.ITEM.registerForItems((stack, ctx) -> new FluidFuelItemHelper.ItemStorage(DieselToolItem.CAPACITY, FluidFuelItemHelper.ItemStorage.FluidCategory.DIESEL_FUEL, ctx), item));
+    public static final ItemDefinition<PipeToolboxItem> PIPE_TOOLBOX = itemHandheld("Pipe Toolbox", "pipe_toolbox", p -> new PipeToolboxItem(p))
+            .withItemRegistrationEvent((item) -> FluidStorage.ITEM.registerForItems((stack, ctx) -> new FluidFuelItemHelper.ItemStorage(PipeToolboxItem.CAPACITY, FluidFuelItemHelper.ItemStorage.FluidCategory.DYE_FUEL, ctx), item));
 
     public static final ItemDefinition<PortableStorageUnit> PORTABLE_STORAGE_UNIT = itemHandheld("Portable Storage Unit", "portable_storage_unit", PortableStorageUnit::new)
             .withItemRegistrationEvent(item -> EnergyApi.ITEM.registerForItems((stack, ctx) -> SimpleEnergyItem.createStorage(ctx, item.getEnergyCapacity(stack), item.getEnergyMaxInput(stack), item.getEnergyMaxOutput(stack)), item));
@@ -154,7 +157,7 @@ public final class MIItem {
     // Armor
     public static final ItemDefinition<ArmorItem> RUBBER_HELMET = item("Rubber Helmet", "rubber_helmet", s -> new ArmorItem(RubberArmorMaterial.INSTANCE, ArmorItem.Type.HELMET, s.maxCount(1)), ITEMS_OTHER);
     public static final ItemDefinition<ArmorItem> RUBBER_BOOTS = item("Rubber Boots", "rubber_boots", s -> new ArmorItem(RubberArmorMaterial.INSTANCE, ArmorItem.Type.BOOTS, s.maxCount(1)), ITEMS_OTHER);
-    public static final ItemDefinition<JetpackItem> DIESEL_JETPACK = item("Diesel Jetpack", "diesel_jetpack", JetpackItem::new, ITEMS_OTHER).withItemRegistrationEvent((item) -> FluidStorage.ITEM.registerForItems((stack, ctx) -> new FluidFuelItemHelper.ItemStorage(JetpackItem.CAPACITY, ctx), item));
+    public static final ItemDefinition<JetpackItem> DIESEL_JETPACK = item("Diesel Jetpack", "diesel_jetpack", JetpackItem::new, ITEMS_OTHER).withItemRegistrationEvent((item) -> FluidStorage.ITEM.registerForItems((stack, ctx) -> new FluidFuelItemHelper.ItemStorage(JetpackItem.CAPACITY, FluidFuelItemHelper.ItemStorage.FluidCategory.DIESEL_FUEL, ctx), item));
 
     public static final ItemDefinition<GraviChestPlateItem> GRAVICHESTPLATE = item("Gravichestplate", "gravichestplate", GraviChestPlateItem::new, ITEMS_OTHER);
 

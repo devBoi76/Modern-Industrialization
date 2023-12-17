@@ -23,7 +23,9 @@
  */
 package aztech.modern_industrialization.items;
 
+import aztech.modern_industrialization.MIFluids;
 import aztech.modern_industrialization.api.FluidFuelRegistry;
+import aztech.modern_industrialization.fluid.MIFluid;
 import aztech.modern_industrialization.util.FluidHelper;
 import aztech.modern_industrialization.util.NbtHelper;
 import java.util.List;
@@ -83,11 +85,17 @@ public interface FluidFuelItemHelper {
     }
 
     class ItemStorage extends SingleVariantItemStorage<FluidVariant> {
+        public enum FluidCategory {
+            DIESEL_FUEL,
+            DYE_FUEL
+        }
+        private FluidCategory fluidCategory;
         private final long capacity;
 
-        public ItemStorage(long capacity, ContainerItemContext ctx) {
+        public ItemStorage(long capacity, FluidCategory fluidCategory, ContainerItemContext ctx) {
             super(ctx);
             this.capacity = capacity;
+            this.fluidCategory = fluidCategory;
         }
 
         @Override
@@ -120,7 +128,15 @@ public interface FluidFuelItemHelper {
 
         @Override
         protected boolean canInsert(FluidVariant resource) {
-            return FluidFuelRegistry.getEu(resource.getFluid()) > 0;
+            // TODO: This is a bit ugly but I think it's the simplest way
+            if (fluidCategory == FluidCategory.DYE_FUEL) {
+                return resource.getFluid() instanceof MIFluid fluid &&
+                        (fluid.isSame(MIFluids.FLUIDS.get(MIFluids.BENZENE.getId()).fluid)
+                                || fluid.isSame(MIFluids.FLUIDS.get(MIFluids.SYNTHETIC_OIL.getId()).fluid)
+                        );
+            } else {
+                return FluidFuelRegistry.getEu(resource.getFluid()) > 0;
+            }
         }
     }
 
