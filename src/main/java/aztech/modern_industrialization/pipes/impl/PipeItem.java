@@ -72,7 +72,6 @@ public class PipeItem extends Item {
                     placementStack.shrink(1);
                 }
 
-
                 return InteractionResult.sidedSuccess(world.isClientSide);
             }
             case MADE_CONNECTION -> {
@@ -85,14 +84,11 @@ public class PipeItem extends Item {
 
         return super.useOn(context);
     }
-
-
     public enum PipePlacementResult {
         PLACED_NEW,
         MADE_CONNECTION,
         DID_NOTHING
     }
-
     public PipePlacementResult tryPlacePipe(UseOnContext context) {
         BlockPos placingPos = tryPlace(context);
 
@@ -116,6 +112,7 @@ public class PipeItem extends Item {
 
         } else {
             // if we couldn't place a pipe, we try to add a connection instead
+            // TODO: Return DID_NOTHING if the connection already existed
             placingPos = context.getClickedPos().relative(context.getClickedFace());
             BlockEntity entity = world.getBlockEntity(placingPos);
             if (entity instanceof PipeBlockEntity pipeEntity) {
@@ -135,7 +132,6 @@ public class PipeItem extends Item {
                     return PipePlacementResult.MADE_CONNECTION;
                 }
             }
-
         }
 
         return PipePlacementResult.DID_NOTHING;
